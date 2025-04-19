@@ -76,7 +76,8 @@ print("Answer: ", result["result"])
 `````
 ### OUTPUT:
 
-![Screenshot (197)](https://github.com/user-attachments/assets/9e6ded91-f1b9-4bd0-9e1e-3153996bf85e)
+![Screenshot (197)](https://github.com/user-attachments/assets/ca848685-4681-4ef9-811f-19ae2b303765)
+
 
 ### RESULT:
 Thus, a question-answering chatbot capable of processing and extracting information from a provided PDF document using LangChain was implemented and evaluated for its effectiveness by testing its responses to diverse queries derived from the document's content successfully.
