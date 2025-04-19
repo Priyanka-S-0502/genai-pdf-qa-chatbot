@@ -33,54 +33,50 @@ Test the chatbot with a variety of queries to assess accuracy and reliability.
 
 ### PROGRAM:
 ```
-py
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
-from langchain.vectorstores import DocArrayInMemorySearch
-from langchain.document_loaders import TextLoader
-from langchain.chains import RetrievalQA,  ConversationalRetrievalChain
-from langchain.memory import ConversationBufferMemory
-from langchain.chat_models import ChatOpenAI
-from langchain.document_loaders import TextLoader
+import os
 from langchain.document_loaders import PyPDFLoader
 
-def load_db(file, chain_type, k):
-    # load documents
-    loader = PyPDFLoader(file)
-    documents = loader.load()
+# File name
+file_path = "tech.pdf"
 
-    # split documents
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
-    docs = text_splitter.split_documents(documents)
+# Confirm file existence and load
+if os.path.isfile(file_path):
+    loader = PyPDFLoader(file_path)
+    pages = loader.load()
+    print("PDF loaded successfully.")
+    print(pages[0].page_content if pages else "PDF is empty.")
 
-    # define embedding
-    embeddings = OpenAIEmbeddings()
+from langchain.vectorstores import Chroma
+from langchain.embeddings.openai import OpenAIEmbeddings
+persist_directory = 'docs/chroma/'
+embedding = OpenAIEmbeddings()
+vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedding)
 
-    # create vector database from data
-    db = DocArrayInMemorySearch.from_documents(docs, embeddings)
+from langchain.chat_models import ChatOpenAI
+llm = ChatOpenAI(model_name='gpt-4', temperature=0)
 
-    # define retriever
-    retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": k})
+from langchain.prompts import PromptTemplate
+template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum. Keep the answer as concise as possible. Always say "thanks for asking!" at the end of the answer. 
+{context}
+Question: {question}
+Helpful Answer:"""
+QA_CHAIN_PROMPT = PromptTemplate(input_variables=["context", "question"],template=template,)
 
-    # create a chatbot chain. Memory is managed externally.
-    qa = ConversationalRetrievalChain.from_llm(
-        llm=ChatOpenAI(model_name=llm_name, temperature=0), 
-        chain_type=chain_type, 
-        retriever=retriever, 
-        return_source_documents=True,
-        return_generated_question=True,
-    )
-    return qa 
-```
+from langchain.chains import RetrievalQA
+question = "what is the definition of technology"
+qa_chain = RetrievalQA.from_chain_type(llm,
+                                       retriever=vectordb.as_retriever(),
+                                       return_source_documents=True,
+                                       chain_type_kwargs={"prompt": QA_CHAIN_PROMPT})
 
+result = qa_chain({"query": question})
+print("Question: ", question)
+print("Answer: ", result["result"])
+
+`````
 ### OUTPUT:
 
-![exp-3 op](https://github.com/user-attachments/assets/d538c9da-7734-4b0b-b738-7799c4d3274d)
-
-![exp-3 op2](https://github.com/user-attachments/assets/30e5bad2-2f7b-49b2-a1f7-1b80821b60b8)
-
-![exp-3 op3](https://github.com/user-attachments/assets/c1dcbabf-12a4-4684-be38-bef61ad01869)
-
+![Screenshot (197)](https://github.com/user-attachments/assets/9e6ded91-f1b9-4bd0-9e1e-3153996bf85e)
 
 ### RESULT:
 Thus, a question-answering chatbot capable of processing and extracting information from a provided PDF document using LangChain was implemented and evaluated for its effectiveness by testing its responses to diverse queries derived from the document's content successfully.
