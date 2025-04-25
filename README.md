@@ -33,11 +33,45 @@ Test the chatbot with a variety of queries to assess accuracy and reliability.
 
 ### PROGRAM:
 ```
+from langchain.document_loaders import PyPDFLoader
+loader = PyPDFLoader("tech.pdf")
+pages = loader.load()
+
+from langchain.vectorstores import Chroma
+from langchain.embeddings.openai import OpenAIEmbeddings
+persist_directory = 'docs/chroma/'
+embedding = OpenAIEmbeddings()
+vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedding)
+
+from langchain.chat_models import ChatOpenAI
+llm = ChatOpenAI(model_name='gpt-4', temperature=0)
+
+# Build prompt
+from langchain.prompts import PromptTemplate
+template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum. Keep the answer as concise as possible. Always say "thanks for asking!" at the end of the answer. 
+{context}
+Question: {question}
+Helpful Answer:"""
+QA_CHAIN_PROMPT = PromptTemplate(input_variables=["context", "question"],template=template,)
+
+# Run chain
+from langchain.chains import RetrievalQA
+question = "Is probability a class topic?"
+qa_chain = RetrievalQA.from_chain_type(llm,
+                                       retriever=vectordb.as_retriever(),
+                                       return_source_documents=True,
+                                       chain_type_kwargs={"prompt": QA_CHAIN_PROMPT})
+
+result = qa_chain({"query": question})
+print("Question: ", question)
+print("Answer: ", result["result"])
 
 
-`````
+
+```
 ### OUTPUT:
 
+![Screenshot 2025-04-19 112031](https://github.com/user-attachments/assets/ed832117-ae9d-4a43-930b-076b29e26823)
 
 
 
