@@ -73,10 +73,11 @@ result = qa_chain({"query": question})
 print("Question: ", question)
 print("Answer: ", result["result"])
 
+
 `````
 ### OUTPUT:
 
-![Screenshot (197)](https://github.com/user-attachments/assets/ca848685-4681-4ef9-811f-19ae2b303765)
+![Screenshot 2025-04-19 112031](https://github.com/user-attachments/assets/2326a0b8-f17f-41b3-b16a-368d93a65c4f)
 
 
 ### RESULT:
