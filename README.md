@@ -5,31 +5,14 @@ To design and implement a question-answering chatbot capable of processing and e
 
 ### PROBLEM STATEMENT:
 
-In many cases, users need specific information from large documents without manually searching through them. A question-answering chatbot can address this problem by:
-
-1. Parsing and indexing the content of a PDF document.
-2. Allowing users to ask questions in natural language.
-3. Providing concise and accurate answers based on the content of the document.
-  
-The implementation will evaluate the chatbot’s ability to handle diverse queries and deliver accurate responses.
-
 ### DESIGN STEPS:
 
-#### STEP 1: Load and Parse PDF
-Use LangChain's DocumentLoader to extract text from a PDF document.
-
-#### STEP 2: Create a Vector Store
-Convert the text into vector embeddings using a language model, enabling semantic search.
-
-#### STEP 3: Initialize the LangChain QA Pipeline
-Use LangChain's RetrievalQA to connect the vector store with a language model for answering questions.
-
-#### STEP 4: Handle User Queries
-Process user queries, retrieve relevant document sections, and generate responses.
-
-#### STEP 5: Evaluate Effectiveness
-Test the chatbot with a variety of queries to assess accuracy and reliability.
-
+#### STEP 1:
+Before starting the implementation, ensure that all necessary libraries and dependencies are installed. This includes LangChain for processing the text, PyPDF2 (or similar) for reading PDF files, and an LLM like OpenAI for question-answering functionality.Install Necessary Libraries
+#### STEP 2:
+Use libraries like PyPDF2 to extract the text from the provided PDF document. The PDF extraction process should handle multiple pages and ensure that the text is clean and usable for further processing.
+#### STEP 3:
+Once the PDF text is extracted, it needs to be processed using LangChain’s tools, such as the TextSplitter and QuestionAnsweringChain, to handle large documents and provide accurate answers based on the content.
 
 ### PROGRAM:
 ```
